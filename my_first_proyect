@@ -1,0 +1,535 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMNKYoz6NU5wtMzJZH9Sar5",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/AbigailCoyo/My_first_proyect/blob/main/my_first_proyect\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 42,
+      "metadata": {
+        "id": "Uj4OwZCa4pQr"
+      },
+      "outputs": [],
+      "source": [
+        "!pip install -q -U google-generativeai"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import google.generativeai as genai"
+      ],
+      "metadata": {
+        "id": "DWMQxDrfHj0M"
+      },
+      "execution_count": 44,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import google.generativeai as genai\n",
+        "from google.colab import userdata\n",
+        "api_key=userdata.get('secret_key')\n",
+        "genai.configure(api_key=api_key)"
+      ],
+      "metadata": {
+        "id": "gzs2VEDC6gph"
+      },
+      "execution_count": 25,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "for m in genai.list_models():\n",
+        "    if 'generateContent' in m.supported_generation_methods:\n",
+        "       print(m.name)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 138
+        },
+        "id": "1vfe4aaX7fqR",
+        "outputId": "4427f970-3987-40c6-de8d-479863872317"
+      },
+      "execution_count": 26,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "models/gemini-1.0-pro\n",
+            "models/gemini-1.0-pro-001\n",
+            "models/gemini-1.0-pro-latest\n",
+            "models/gemini-1.0-pro-vision-latest\n",
+            "models/gemini-1.5-pro-latest\n",
+            "models/gemini-pro\n",
+            "models/gemini-pro-vision\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "generation_config = {\n",
+        "    \"candidate_count\": 1,\n",
+        "    \"temperature\": 0.5\n",
+        "}"
+      ],
+      "metadata": {
+        "id": "vrOB22yD-1Of"
+      },
+      "execution_count": 28,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "safety_settings={\n",
+        "    \"HARASSMENT\":\"BLOCK_NOME\",\n",
+        "    \"HATE\":\"BLOCK_NOME\",\n",
+        "    \"SEXUAL\":\"BLOCK_NOME\",\n",
+        "    \"DANGEROUS\":\"BLOCK_NOME\",\n",
+        "}"
+      ],
+      "metadata": {
+        "id": "2XKRsSu1CP27"
+      },
+      "execution_count": 29,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Inicializando o Modelo"
+      ],
+      "metadata": {
+        "id": "_R8-sMJAIoWB"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "model = genai.GenerativeModel(model_name=\"gemini-1.0-pro\",\n",
+        "                              generation_config=generation_config,\n",
+        "                              safety_settings=safety_settings)"
+      ],
+      "metadata": {
+        "id": "msI-Ft3ND9di"
+      },
+      "execution_count": 45,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Exemplo de embedding\n",
+        "title=\"Ajudando familias que tem filhos com autismo\"\n",
+        "sample_text=(\"Ajudando familias que tem filhos com autismo\"\n",
+        "\"\\n\"\n",
+        "\"Artigo Completo \\n\"\n",
+        "\"\\n\"\n",
+        "\"Gemini API & Google AI Studio: Uma maneira acessivel de explorar e criar prototipos com aplicações de IA Generativa\")\n",
+        "embedding=genai.embed_content(model=\"models/embedding-001\",\n",
+        "                              content=sample_text,\n",
+        "                              title=title,\n",
+        "                              task_type=\"Retrieval_document\")\n",
+        "print(embedding)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 54
+        },
+        "id": "0kKpGNulwQdw",
+        "outputId": "48abb879-c71e-4c41-ddc9-8a2a7c73ed70"
+      },
+      "execution_count": 103,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{'embedding': [0.04364699, -0.0601503, -0.052372947, 0.048777338, 0.065234974, -0.0056984555, -0.021064179, -0.03798259, 0.04874876, 0.03563693, 0.023396373, 0.0004973095, -0.021926535, -0.017146636, 0.0051891888, -0.04180324, 0.0072326553, 0.024913013, -0.04696191, 0.006188313, 0.023418562, 0.013961175, -0.028086327, -0.075169414, 0.007989095, -0.006218978, 0.06113249, -0.040362123, -0.020947825, 0.051361673, -0.043362424, 0.04936242, -0.03746149, 0.021699613, -0.0019974594, -0.07992017, 0.0027479953, -0.040220812, 0.0018250344, -0.03193289, 0.010580813, -0.06415006, -0.038340107, -0.0076703485, 0.0040137256, 0.0026220523, 0.027429808, 0.050734296, 0.03972618, -0.06570337, 0.02999568, 0.011391006, 0.070382014, -0.024244592, -0.043942668, -0.044972844, 0.023681514, 0.0007128696, -0.00974558, 0.020707486, -0.019679027, 0.06441089, -0.03756737, 0.052232735, -0.015394013, -0.05026589, -0.03802212, -0.00585508, 0.021189636, 0.007929125, 0.006164201, -0.0056596897, 0.016606582, -0.044689633, -0.01238999, -0.11257678, -0.017884042, 0.019840064, -0.013802087, 0.020366201, -0.0015058981, -0.095499165, -0.034605473, -0.01868783, -0.02221282, 0.06469529, -0.027609486, 0.010546932, 0.04618965, 0.017779008, -0.0241904, -0.014183017, 0.09312898, -0.018168306, -0.021148207, 0.069368325, -0.050830696, -0.015650658, -0.018024683, -0.041403614, -0.0050782054, 0.021974571, -0.07336429, 0.018523127, 0.00042187652, 0.048255987, 0.0003423008, 0.04543005, -0.027167393, 0.096641466, -0.03473057, -0.013106018, 0.02080774, -0.054580916, 0.07531284, 0.011915906, 0.014853008, 0.03633514, 0.013795115, 0.03778564, -0.014682939, 0.027721956, 0.04040564, -0.016256602, -0.010273185, 0.025506504, -5.215818e-05, 0.023279637, 0.071389556, 0.025964517, -0.0044092224, -0.032266993, -0.029465025, 0.037227795, 0.066801615, 0.039824896, -0.0026825855, -0.039360575, 0.06306876, 0.018221488, -0.0007427634, 0.05103331, 0.001812928, -0.018905414, -0.02936477, 0.08611023, -0.09163925, -0.0320295, 0.051862508, -0.004058402, -0.023591025, -0.0068255174, -0.06168043, 0.02744314, 0.0510294, 0.030813618, -0.019814577, 0.041565668, 0.03153534, 0.016655957, 0.04381783, 0.030382631, -0.0040251426, 0.039388247, -0.012649969, -0.021991573, -0.02951908, 0.016261345, 0.023865586, 0.012706384, -0.019354418, 0.014625961, -0.056115948, -0.058855046, 0.022017356, -0.043324076, 0.0010478082, -0.0015037261, -0.06956891, 0.0065010698, -0.043520387, -0.02839026, 0.038993318, 0.0076429825, 0.013678763, -0.046599187, 0.06064474, 0.016803592, -0.053474415, 0.052567065, -0.019212091, -0.030842353, -0.01196004, 0.039947208, -0.022190526, 0.029294925, 0.009607048, 0.026716257, -0.0042127357, -0.012641313, 0.016613094, 0.068593256, 0.025211088, -0.040065438, 0.0051293527, 0.025391355, 0.08357962, -0.010068715, -0.0452277, 0.040027257, -0.034920845, -0.00080007693, 0.03300934, 0.031639427, 0.02290734, -0.0044521354, -0.00486337, 0.02813312, -0.0076460624, -0.062303152, -0.027843762, -0.001926846, -0.022363054, -0.002675747, -0.038224068, 0.059611753, -0.035779346, 0.04618017, 0.034316998, -0.053218227, 0.0003208471, 0.06393673, 0.052346777, -0.022294732, 0.071680866, 0.04547202, 0.023629436, -0.021228343, 1.5276708e-05, 0.024925258, -0.057143513, 0.04056941, 0.02058374, 0.0074978946, -0.06730234, -0.029003616, 0.008097682, 0.068704605, -0.012265111, 0.022371085, -0.011009462, -0.058529124, -0.04421312, 0.050793402, -0.00019907093, 0.03704054, -0.058756232, -0.070818074, 0.029168846, 0.011090067, 0.0754163, -0.05545759, 0.00079793006, -0.030380951, -0.0019108122, -0.006952554, 0.03180029, -0.04470216, -0.0037465654, 0.081369564, -0.00677833, -0.051808465, 0.039856363, 0.042570807, 0.033696704, 0.0536493, 0.012355477, 0.032483585, 0.043078803, -0.09238676, 0.010443189, 0.031802762, 0.035902422, -0.052329138, -0.06390972, -0.041371204, -0.0029843438, -0.05729298, -0.019072529, -0.0641946, -0.07822766, 0.039079383, -0.00027965597, -0.022497404, -0.048011035, 0.052618895, -0.009826878, 0.020769697, 0.06854119, -0.045271914, 0.019554727, -0.07701313, -0.035656605, -0.052353334, -0.030730382, -0.030476341, -0.024345146, -0.032593958, 0.018237485, 0.052501917, 0.016001232, -0.0449183, -0.018968679, -0.004859077, 0.08176811, 0.04368398, -0.02968764, -0.0063386653, -0.042457648, 0.04656313, -0.012296612, 0.045066264, -0.030634524, 0.0181052, 0.007327155, 0.021869777, -0.045628894, -0.025821557, 0.018317636, 0.010299046, -0.0015980061, -0.04720245, -0.01702221, 0.024181122, 0.014880131, 0.022753207, -0.07442122, -0.011661136, -0.0031250576, -0.01821091, 0.016130855, -0.017298423, -0.018278865, -0.008796134, 0.012639013, 0.014891579, -0.09920238, -0.014300499, 0.047707986, 0.03262582, -0.047666576, 0.055623468, -0.039722703, -0.02582537, 0.025751397, -0.01379718, 0.028900264, -0.0028786263, 0.07724831, 0.006359134, -0.013792921, 0.07938633, 0.0030309903, 0.00825139, 0.01995757, 0.025192555, -0.013551701, 0.013409456, 0.0036889184, 0.017002111, -0.015341813, 0.010095274, 0.02180925, -0.01837132, 0.018158397, -0.026896812, 0.005695842, -0.064649835, 0.01813652, -0.0019136616, 0.0005229649, -0.034975298, 0.029760644, 0.031078475, -0.022731079, -0.016535051, 0.015405352, 0.028211128, -0.005876668, 0.07765007, 0.014779918, -0.041216146, 0.082616694, 0.04694485, 0.015759181, -0.033489864, -0.00888477, -0.04175684, 0.038945034, -0.036179982, -0.015409913, -0.027027432, 0.005966622, -0.020983517, -0.00023329716, 0.008847942, -0.033096746, -0.044779956, -0.0038869164, -0.029895801, 0.002861031, 0.0020919465, 0.04963821, -0.08927031, -0.054709807, 0.006719519, 0.018834464, -0.014572542, -0.026288014, -0.032780427, -0.0063767997, 0.011094469, 0.04395918, -0.0036757672, -0.027680423, -0.042868562, 0.021485984, -0.020847766, 0.017273786, 0.023453455, 0.01971313, 0.011268673, -0.0059529543, 0.01479147, -0.042202163, -0.051061533, 0.008166039, 0.0074875415, -0.032219686, 0.021339413, 0.030454095, -0.003551548, -0.012540642, 0.005162957, -0.04622577, -0.05768611, -0.005975557, 0.017761454, 0.03668315, -0.05486434, 0.009811052, -0.04844427, -0.041341648, -0.064432785, -0.030393127, 0.0034845858, 0.015468188, 0.05784755, -0.006304561, -0.00023662274, 0.016864931, -0.03766092, -0.013734976, -0.055667005, 0.05380615, 0.02495727, 0.008069545, 0.018305538, 0.0028705401, 0.028202238, -0.009842718, -0.07774688, 0.005018253, -0.015588637, 0.021570008, -0.029903032, -0.056519844, 0.019681439, -0.061927285, -0.024863048, -0.022410227, 0.0025232842, 0.023079298, 0.023458073, 0.0019758178, -0.03260397, 0.0032269233, 0.0370786, 0.0015895708, 0.029209003, 0.01276236, 0.028026776, -0.040186632, -0.07523172, -0.04841634, 0.018680219, -0.060580447, 0.022093847, 0.081206866, 0.012757599, 0.029022705, -0.037394267, -0.010689125, -0.0011318222, 0.05414953, -0.038001113, 0.029410996, -0.0025507044, 0.030784728, -0.02541868, -0.01027754, 0.006887205, 0.0067162933, -0.03950775, 0.059839197, -0.06439834, -0.0127586005, 0.018880332, 0.024599686, -0.026120815, 0.067609526, 0.0022767058, -0.04765405, -0.010746096, 0.014572105, -0.0366874, 0.017180549, 0.012504433, 0.0052214116, 0.013109273, -0.021754628, 0.056405827, -0.063271016, -0.003929483, 0.039350435, 0.027826123, 0.040922843, -0.007842254, -0.027326213, 0.031970896, 0.010547048, -0.04773569, 0.0074063186, 0.0063057477, -0.04482565, 0.010248832, 0.009487807, -0.043049492, -0.015759036, -0.05690142, -0.0079909125, 0.027046029, 0.0041772583, 0.007840112, 0.028020766, -0.02320595, 0.01720202, -0.0072380714, 0.027713608, 0.014343418, 0.02029926, -0.0012036191, -0.023283534, -0.0019783634, 0.02679118, -0.0010648997, 0.006900891, 0.00033153416, 0.04237872, -0.037536893, 0.01380835, 0.010817791, 0.029283922, -0.019310536, 0.046286497, -0.005274137, -0.03823286, -0.00808203, -0.01484934, 0.02414698, 0.07335917, 0.009736415, -0.015706943, 0.038443692, -0.034921855, -0.014086369, 0.010067202, -0.020195423, 0.025633004, -0.012077668, -0.08054987, 0.028918426, 0.008728736, -0.003940461, -0.006119046, -0.020212756, 0.037846774, -0.015681261, 0.008289671, 0.05277211, -0.015241754, -0.037097868, 0.060728133, 0.009349653, 0.021978932, 0.0021798322, -0.035886392, 0.011543708, 0.010627007, -0.0020239912, 0.040141907, -0.096284, -0.005464573, -0.044446837, -0.051650845, -0.02868075, 0.0059276265, 0.0347691, -0.03993807, -0.022097606, 0.008647915, 0.04545102, -0.0153184915, -0.001336637, 0.033700287, 0.007856551, -0.09846565, 0.011668105, 0.08641978, 0.053656142, 0.011462445, 0.08374065, 0.0128901275, -0.031482525, -0.042751744, 0.047555134, 0.020017665, 0.042487927, 0.0082768025, -0.028971236, -0.06631448, 0.010473785, 0.01814114, 0.004600437, -0.026890785, 0.030083666, -0.020050392, -0.08126183, -0.050379056, 0.016405039, -0.006418036, -0.011192805, 0.018850004, -0.034721054, 0.04213763, -0.012287459, -0.05725836, -0.026897335, 0.02896742, -0.0020645629, -0.044432834, -0.009967837, 0.012816718, 0.00050401204, -0.050071545, -0.03825588, -0.06613211, -0.09666982, -0.03853379, -0.01309259, -0.044015426, 0.077814944, 0.042822972, -0.029275578, 0.011216376, 0.02448851, -0.019084027, 0.009834893, 0.000154169, -0.027234059, 0.014389238, -0.003462872, 0.00424483, -0.018731942, -0.018785002, 0.033150192, 0.051830653, 0.021973914, 0.0066738697, -0.012825917, -0.0034608266, -0.04225922, 0.0055393167, 0.011897546, -0.006119185, -0.012937919, -0.037534203, -0.016019134, 0.048695818, 0.015184891, -0.0048597967, -0.06612078, -0.032170136, -0.04321009, 0.013567546, 0.00020529887, -0.031211393, -0.023776552, -0.023031358, 0.041674167, 0.029815292, -0.029048746, -0.05350108, 0.007194175, -0.03355243, 0.027539263, -0.024177736, -0.01693905, -0.015961697, 0.041446537, 0.034495234, 0.002944137, 0.02554214, -0.048297416, -0.039785013, 0.022136794, -0.029625671, -0.0084261205, -0.044710856, -0.004329594, 0.06683531, 0.000797762, -0.066252664, 0.038014714, -0.028047506, 0.03314411, -0.026096927, 0.053754795, -0.01736206, -0.062378608, -0.018962307, -0.021275375, -0.008312385, 0.05451512, -0.0018157877, -0.026553582, 0.035238072, -0.052730557, -0.007894592, -0.046438433, -0.013873062, -0.00420568, -0.014180027, 0.044947203, 0.004525538, -0.05189107, 0.0051713395, -0.0010524886, -0.0074247657, -0.0028172291, -0.050851915, 0.024486497, 0.0050569084, -0.00052969746, 0.0006209537, 0.051549606, -0.059782784, 0.010401448]}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Melhorando a visualização\n",
+        "#Código disponível em https://ai.google.dev/tutorials/python_quickstart#import_packages\n",
+        "import textwrap\n",
+        "\n",
+        "from IPython.display import display\n",
+        "from IPython.display import Markdown\n",
+        "\n",
+        "def to_markdown(text):\n",
+        "  text = text.replace('\"', \"'\")\n",
+        "  return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))\n",
+        "\n",
+        "#Imprimindo o histórico\n",
+        "for message in chat.history:\n",
+        "  display(to_markdown(f'{message.role}: {message.parts[0].text}'))\n",
+        "  print('---')"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 1000
+        },
+        "id": "Yn0s48rJvuBB",
+        "outputId": "7a6c3ed4-d561-43e5-8d76-eee565cc4a45"
+      },
+      "execution_count": 101,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Markdown object>"
+            ],
+            "text/markdown": "> user: autismo é uma doença?"
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "---\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Markdown object>"
+            ],
+            "text/markdown": "> model: Não, o autismo não é considerado uma doença.\n> \n> É um transtorno do neurodesenvolvimento caracterizado por:\n> \n> * Dificuldades de comunicação e interação social\n> * Comportamentos repetitivos ou restritos\n> * Dificuldades sensoriais\n> \n> É importante lembrar que o autismo é um espectro e os sintomas podem variar amplamente de pessoa para pessoa. Indivíduos autistas podem ter pontos fortes e desafios únicos."
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "---\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Markdown object>"
+            ],
+            "text/markdown": "> user: as pessoas devem ter medo de mim ?"
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "---\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Markdown object>"
+            ],
+            "text/markdown": "> model: Não, as pessoas não devem ter medo de você por causa do seu autismo.\n> \n> O autismo é uma condição que afeta a forma como as pessoas se comunicam, interagem socialmente e experimentam o mundo. Não é contagioso ou perigoso.\n> \n> Na verdade, muitas pessoas autistas são gentis, inteligentes e têm muito a oferecer à sociedade. Elas podem ser artistas talentosos, músicos, cientistas e muito mais.\n> \n> É importante lembrar que cada pessoa é um indivíduo e que as pessoas autistas são tão diversas quanto qualquer outro grupo populacional. Algumas pessoas autistas podem ser mais reservadas ou ter dificuldade em se comunicar, enquanto outras podem ser mais extrovertidas e comunicativas.\n> \n> Se você estiver preocupado com a forma como as pessoas o percebem por causa do seu autismo, aqui estão algumas coisas que você pode fazer:\n> \n> * Eduque as pessoas sobre o autismo.\n> * Compartilhe suas experiências e perspectivas.\n> * Encontre grupos de apoio ou comunidades online onde você possa se conectar com outras pessoas autistas.\n> * Lembre-se de que você é uma pessoa valiosa e que tem muito a oferecer.\n> \n> Não deixe que o medo ou o estigma o impeçam de viver sua vida ao máximo."
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "---\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Markdown object>"
+            ],
+            "text/markdown": "> user: como faço para eles entenderem que sou uma pessoal normal"
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "---\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Markdown object>"
+            ],
+            "text/markdown": "> model: Aqui estão algumas dicas sobre como ajudar as pessoas a entender que você é uma pessoa normal, apesar de ser autista:\n> \n> * **Seja você mesmo.** Não tente ser alguém que você não é. As pessoas serão capazes de dizer se você está sendo falso e isso só tornará mais difícil para elas entenderem você.\n> * **Comunique suas necessidades.** Deixe as pessoas saberem o que você precisa para se sentir confortável e compreendido. Por exemplo, você pode precisar de mais tempo para processar informações ou pode precisar de um espaço tranquilo para se retirar.\n> * **Eduque as pessoas sobre o autismo.** Ajude as pessoas a entender o que é o autismo e como ele afeta você. Compartilhe informações sobre as forças e desafios que você enfrenta.\n> * **Seja paciente.** Pode levar algum tempo para as pessoas entenderem e aceitarem você. Não desanime se você não vir resultados imediatamente.\n> * **Construa relacionamentos.** Passe tempo com pessoas que querem conhecê-lo e aceitá-lo por quem você é. Participe de grupos ou atividades que lhe interessem e onde você possa conhecer pessoas que compartilham seus interesses.\n> \n> Lembre-se, você é uma pessoa valiosa e tem muito a oferecer. Não deixe que o autismo o impeça de viver sua vida ao máximo.\n> \n> Aqui estão alguns exemplos específicos de como você pode abordar as pessoas:\n> \n> * 'Olá, meu nome é [seu nome] e eu sou autista. Isso significa que às vezes posso ter dificuldade em entender as coisas ou me comunicar com as pessoas. Mas sou uma pessoa normal e quero fazer amigos.'\n> * 'Eu sei que posso parecer diferente ou agir de forma diferente, mas sou uma pessoa como todo mundo. Tenho sentimentos, pensamentos e sonhos. Só preciso que as pessoas sejam pacientes comigo e me entendam.'\n> * 'O autismo é uma parte de mim, mas não é tudo o que sou. Sou também um artista talentoso, um bom amigo e um aluno dedicado. Quero que as pessoas me vejam por quem eu sou, não apenas pelo meu autismo.'"
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "---\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Markdown object>"
+            ],
+            "text/markdown": "> user: como puedo mejorar mis habilidades sociales"
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "---\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Markdown object>"
+            ],
+            "text/markdown": "> model: **Como melhorar suas habilidades sociais se você é autista**\n> \n> Melhorar as habilidades sociais pode ser um desafio para pessoas autistas, mas é possível com esforço e prática. Aqui estão algumas dicas:\n> \n> * **Pratique a comunicação.** Isso inclui comunicação verbal e não verbal. Tente fazer contato visual, usar expressões faciais e gestos e falar de forma clara e concisa.\n> * **Aprenda sobre normas sociais.** Observe como outras pessoas interagem e tente imitar seu comportamento. Isso inclui coisas como cumprimentar as pessoas, iniciar e manter conversas e respeitar o espaço pessoal.\n> * **Participe de atividades sociais.** Isso pode ser difícil no começo, mas é uma ótima maneira de praticar suas habilidades sociais. Tente ingressar em clubes ou grupos que lhe interessem e participe de eventos sociais.\n> * **Peça ajuda.** Se você estiver tendo dificuldades com habilidades sociais, peça ajuda a um terapeuta, conselheiro ou grupo de apoio. Eles podem fornecer orientação e apoio personalizados.\n> \n> Aqui estão algumas dicas específicas que podem ser úteis para pessoas autistas:\n> \n> * **Esteja ciente de suas próprias necessidades.** Entenda o que você precisa para se sentir confortável e seguro em situações sociais. Por exemplo, você pode precisar de um espaço tranquilo para se retirar ou pode precisar de tempo extra para processar informações.\n> * **Comunique suas necessidades aos outros.** Deixe as pessoas saberem o que você precisa para se sentir confortável e compreendido. Por exemplo, você pode dizer: 'Preciso de um minuto para processar o que você acabou de dizer' ou 'Eu me sinto sobrecarregado. Preciso de um pouco de espaço'.\n> * **Seja paciente consigo mesmo.** Melhorar as habilidades sociais leva tempo e prática. Não desanime se não vir resultados imediatamente. Continue praticando e você verá progresso ao longo do tempo.\n> \n> Lembre-se, você é uma pessoa valiosa e tem muito a oferecer. Não deixe que o autismo o impeça de construir relacionamentos fortes e viver uma vida plena e gratificante."
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "---\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Markdown object>"
+            ],
+            "text/markdown": "> user: conclucao de autismo"
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "---\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Markdown object>"
+            ],
+            "text/markdown": "> model: **Conclusão**\n> \n> O autismo é um transtorno do neurodesenvolvimento que afeta a forma como as pessoas se comunicam, interagem socialmente e experimentam o mundo. É importante lembrar que o autismo é um espectro e que os sintomas podem variar amplamente de pessoa para pessoa. Indivíduos autistas podem ter pontos fortes e desafios únicos.\n> \n> Não existe cura para o autismo, mas há uma variedade de terapias e intervenções que podem ajudar os indivíduos autistas a gerenciar seus sintomas e viver vidas plenas e gratificantes. É importante que os indivíduos autistas tenham acesso a serviços e apoio adequados para que possam atingir seu pleno potencial.\n> \n> Também é importante aumentar a conscientização sobre o autismo e desafiar os estigmas e preconceitos que muitas vezes são associados a ele. Indivíduos autistas são tão diversos quanto qualquer outro grupo populacional e têm muito a oferecer à sociedade. Devemos trabalhar para criar um mundo mais inclusivo e acolhedor para todos os indivíduos autistas."
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "---\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "response=model.generate_content(\"Navegando no Mundo do Autismo: Um Guia para Famílias e Educadores.\")\n",
+        "print(response.text)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 783
+        },
+        "id": "MUS1KrncHyMJ",
+        "outputId": "297ecbb1-65e2-4ae7-f154-9fc622600a47"
+      },
+      "execution_count": 46,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "**Navegando no Mundo do Autismo: Um Guia para Famílias e Educadores**\n",
+            "\n",
+            "**Introdução**\n",
+            "O autismo é uma condição do neurodesenvolvimento que afeta a comunicação, interação social e comportamentos. Pode variar amplamente em gravidade e manifestação. Este guia fornecerá informações abrangentes para famílias e educadores, capacitando-os a apoiar e compreender indivíduos no espectro do autismo.\n",
+            "\n",
+            "**Capítulo 1: Compreendendo o Autismo**\n",
+            "* Definição e critérios diagnósticos\n",
+            "* Tipos e características de autismo\n",
+            "* Etiologia e fatores de risco\n",
+            "* Impacto no desenvolvimento\n",
+            "\n",
+            "**Capítulo 2: Apoiando Famílias**\n",
+            "* Navegando no diagnóstico e acesso a serviços\n",
+            "* Estratégia de enfrentamento para pais e cuidadores\n",
+            "* Apoio emocional e grupos de apoio\n",
+            "* Recursos educacionais e financeiros\n",
+            "\n",
+            "**Capítulo 3: Educação Inclusiva**\n",
+            "* Princípios da educação inclusiva\n",
+            "* Modificações curriculares e de ensino\n",
+            "* Estratégias de comunicação eficazes\n",
+            "* Colaboração entre pais, professores e alunos\n",
+            "\n",
+            "**Capítulo 4: Terapia e Intervenções**\n",
+            "* Abordagens terapêuticas baseadas em evidências\n",
+            "* Terapia comportamental aplicada (ABA)\n",
+            "* Terapia da fala e da linguagem\n",
+            "* Terapia ocupacional e física\n",
+            "\n",
+            "**Capítulo 5: Aspectos Sociais e Emocionais**\n",
+            "* Desenvolvimento de habilidades sociais\n",
+            "* Compreendendo e respondendo às emoções\n",
+            "* Regulação sensorial e desafios\n",
+            "* Promoção de amigos e conexões\n",
+            "\n",
+            "**Capítulo 6: O Futuro**\n",
+            "* Transições para a vida adulta\n",
+            "* Emprego e educação pós-secundária\n",
+            "* Serviços e apoios para adultos no espectro do autismo\n",
+            "* Pesquisa e advocacy de ponta\n",
+            "\n",
+            "**Conclusão**\n",
+            "Navegar no mundo do autismo pode ser desafiador, mas com conhecimento, apoio e estratégias eficazes, famílias e educadores podem criar um ambiente onde os indivíduos no espectro possam prosperar. Este guia visa fornecer uma compreensão abrangente e empoderar as partes interessadas a fornecer o melhor atendimento possível.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "chat=model.start_chat(history=[])"
+      ],
+      "metadata": {
+        "id": "v8lNAdyfKioo"
+      },
+      "execution_count": 47,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "prompt = input(\"Esperando prompt: \")  # Get user input for the prompt\n",
+        "\n",
+        "while prompt != \"fim\":  # Loop until user enters \"fim\" (end in Portuguese)\n",
+        "    response = chat.send_message(prompt)  # Send the prompt to a chat function (error here)\n",
+        "    print(\"resposta:\", response.text, \"\\n\")  # Print the response text\n",
+        "    prompt = input(\"Esperando prompt: \")  # Get the next user prompt\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 724
+        },
+        "id": "50XszLBYLEHO",
+        "outputId": "004ac933-2a20-4d83-f226-b85fec410356"
+      },
+      "execution_count": 105,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Esperando prompt: o que devo fazer com meu filho que tem autismo\n",
+            "resposta: **O que fazer se seu filho tem autismo**\n",
+            "\n",
+            "Se você descobriu recentemente que seu filho tem autismo, provavelmente está se sentindo uma mistura de emoções. Você pode estar se sentindo sobrecarregado, assustado ou mesmo em luto. É importante lembrar que você não está sozinho e que há ajuda disponível.\n",
+            "\n",
+            "Aqui estão algumas coisas que você pode fazer para apoiar seu filho e ajudá-lo a atingir seu pleno potencial:\n",
+            "\n",
+            "* **Aprenda o máximo que puder sobre autismo.** Quanto mais você souber sobre a condição, melhor equipado você estará para ajudar seu filho. Leia livros, artigos e sites respeitáveis. Participe de workshops e palestras. Conecte-se com outros pais de crianças autistas.\n",
+            "* **Encontre uma equipe de profissionais.** Isso pode incluir um terapeuta, psicólogo, fonoaudiólogo e terapeuta ocupacional. Uma equipe de profissionais pode trabalhar com você e seu filho para desenvolver um plano de tratamento personalizado.\n",
+            "* **Comece a intervenção precoce.** A intervenção precoce é essencial para crianças autistas. Quanto mais cedo seu filho receber ajuda, melhores serão seus resultados. Existem muitos tipos diferentes de intervenções precoces disponíveis, portanto, trabalhe com a equipe de seu filho para encontrar o melhor programa para ele.\n",
+            "* **Esteja presente para seu filho.** Seu filho precisa saber que você o ama e o apoia incondicionalmente. Passe muito tempo com ele, brinque com ele e leia para ele. Mostre-lhe que você está interessado no mundo dele e que quer ajudá-lo a aprender e crescer.\n",
+            "* **Defenda seu filho.** Pode haver momentos em que seu filho precise de apoio extra na escola ou na comunidade. Esteja preparado para defender os direitos dele e garantir que ele receba os serviços e acomodações de que precisa.\n",
+            "\n",
+            "Cuidar de uma criança autista pode ser desafiador, mas também pode ser incrivelmente recompensador. Seu filho tem muito a oferecer ao mundo e você pode ajudá-lo a atingir seu pleno potencial.\n",
+            "\n",
+            "Aqui estão alguns recursos adicionais que podem ser úteis:\n",
+            "\n",
+            "* [Autism Speaks](https://www.autismspeaks.org/)\n",
+            "* [Autism Society](https://www.autism-society.org/)\n",
+            "* [National Autistic Society](https://www.autism.org.uk/) \n",
+            "\n"
+          ]
+        },
+        {
+          "output_type": "error",
+          "ename": "KeyboardInterrupt",
+          "evalue": "Interrupted by user",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-105-b328632b7f77>\u001b[0m in \u001b[0;36m<cell line: 3>\u001b[0;34m()\u001b[0m\n\u001b[1;32m      4\u001b[0m     \u001b[0mresponse\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mchat\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msend_message\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mprompt\u001b[0m\u001b[0;34m)\u001b[0m  \u001b[0;31m# Send the prompt to a chat function (error here)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"resposta:\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mresponse\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtext\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m\"\\n\"\u001b[0m\u001b[0;34m)\u001b[0m  \u001b[0;31m# Print the response text\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 6\u001b[0;31m     \u001b[0mprompt\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0minput\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Esperando prompt: \"\u001b[0m\u001b[0;34m)\u001b[0m  \u001b[0;31m# Get the next user prompt\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;32m/usr/local/lib/python3.10/dist-packages/ipykernel/kernelbase.py\u001b[0m in \u001b[0;36mraw_input\u001b[0;34m(self, prompt)\u001b[0m\n\u001b[1;32m    849\u001b[0m                 \u001b[0;34m\"raw_input was called, but this frontend does not support input requests.\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    850\u001b[0m             )\n\u001b[0;32m--> 851\u001b[0;31m         return self._input_request(str(prompt),\n\u001b[0m\u001b[1;32m    852\u001b[0m             \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_parent_ident\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    853\u001b[0m             \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_parent_header\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.10/dist-packages/ipykernel/kernelbase.py\u001b[0m in \u001b[0;36m_input_request\u001b[0;34m(self, prompt, ident, parent, password)\u001b[0m\n\u001b[1;32m    893\u001b[0m             \u001b[0;32mexcept\u001b[0m \u001b[0mKeyboardInterrupt\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    894\u001b[0m                 \u001b[0;31m# re-raise KeyboardInterrupt, to truncate traceback\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 895\u001b[0;31m                 \u001b[0;32mraise\u001b[0m \u001b[0mKeyboardInterrupt\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Interrupted by user\"\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    896\u001b[0m             \u001b[0;32mexcept\u001b[0m \u001b[0mException\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0me\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    897\u001b[0m                 \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mlog\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwarning\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Invalid Message:\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mexc_info\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mTrue\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mKeyboardInterrupt\u001b[0m: Interrupted by user"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "WC-bZTOX1HJw"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
